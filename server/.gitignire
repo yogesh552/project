@@ -1,0 +1,16 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+*.tmp
+
+# IDE and OS-specific files
+.vscode/
+.DS_Store
