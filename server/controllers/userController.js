@@ -26,7 +26,8 @@ const chatbotRes_onload = async (req, res) => {
 
         let query = `
             SELECT 
-                parent.question_id, child.answer, child.answer_type
+                parent.question_id, child.answer, child.answer_type, child.sender
+                
             FROM
                 bot_ques_master AS parent
             LEFT JOIN 

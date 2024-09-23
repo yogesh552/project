@@ -24,24 +24,37 @@ function Chatbot() {
     };
 
     // Initialize with static bot messages
-    const [messages, setMessages] = useState([
-        {
-            answer: "Welcome to Smartping, trusted by over 7000 brands with multiple solutions that create great customer experience.",
-            answer_type: 'text',
-            sender: 'bot'
-        },
-        {
-            answer: "To assist you accordingly, please let me know if you are:",
-            answer_type: 'text',
-            sender: 'bot'
-        },
-        {
-            answer: "New Customer\n Existing Customer\n DLT Support\n FAQs", // Comma-separated values as a string
-            answer_type: 'button',
-            sender: 'bot'            
-        }
+    const [messages, setMessages] = useState([]);
+        // {
+        //     answer: "Welcome to Smartping, trusted by over 7000 brands with multiple solutions that create great customer experience.",
+        //     answer_type: 'text', 
+        //     sender: 'bot'
+        // },
+        // {
+        //     answer: "To assist you accordingly, please let me know if you are:",
+        //     answer_type: 'text',
+        //     sender: 'bot'
+        // },
+        // {
+        //     answer: "New Customer\n Existing Customer\n DLT Support\n FAQs", // Comma-separated values as a string
+        //     answer_type: 'button',
+        //     sender: 'bot'            
+        // }
         
-    ]);
+        useEffect(() => {
+            const fetchMessages = async () => {
+                try {
+                    const response = await axios.post('http://localhost:6001/chatbotRes_onload');
+                    setMessages(response.data.results); // Set the fetched messages
+                    console.log()
+                } catch (error) {
+                    console.error('Error loading messages:', error);
+                }
+            };
+    
+            fetchMessages();
+        }, []); // Empty dependency array means it runs once on component mount
+    
 
     const messagesEndRef = useRef(null);
 
@@ -87,6 +100,8 @@ function Chatbot() {
     
     // Handle button click events
 const handleButtonClick = async (option) => {
+    // const buttonElement = option.target; // Assuming option is the event
+    // buttonElement.disabled = true;
     const userMessage = {
         answer: option,
         sender: 'user',
@@ -136,8 +151,16 @@ const handleButtonClick = async (option) => {
 
     // Handle Yes in the confirmation dialog (refresh the page)
     const handleConfirmYes = () => {
-        window.location.reload(); // Refresh the page
+        const botbodyElements = document.getElementsByClassName('botbody');
+        
+        if (botbodyElements.length > 0) {
+            botbodyElements[0].innerHTML = '' // Clear the inner HTML of the first element with the class 'botbody'
+            
+            setShowCloseConfirmation(false);
+            setIsChatbotVisible(!isChatbotVisible);
+        }
     };
+    
 
     // Handle No in the confirmation dialog (hide the dialog)
     const handleConfirmNo = () => {
