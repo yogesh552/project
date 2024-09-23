@@ -61,6 +61,7 @@ function Chatbot() {
     // Toggle chatbot visibility
     const handleImageClick = () => {
         setIsChatbotVisible(!isChatbotVisible);
+        
     };
 
     // Scroll to the bottom of the messages whenever a new message is added
@@ -73,7 +74,7 @@ function Chatbot() {
     // Call scrollToBottom every time the messages array changes
     useEffect(() => {
         scrollToBottom();
-    }, [messages]);
+    }, [messages,handleImageClick]);
 
     // Handle sending messages
     const handleSendClick = () => {
