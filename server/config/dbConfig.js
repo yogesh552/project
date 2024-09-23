@@ -19,7 +19,7 @@ async function executeQuery(query, params) {
       if (err) {
         connection.end(); 
         return reject(err); 
-      }
+      }        
 
       // Execute the query
       connection.query(query, params, (err, results) => {
@@ -37,5 +37,5 @@ async function executeQuery(query, params) {
 
 
 module.exports = {
-  executeQuery,
+  executeQuery
 };

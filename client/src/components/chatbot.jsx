@@ -5,6 +5,7 @@ import { FaBars } from "react-icons/fa";
 import { HiMinusSm } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 import chatbotImg1 from '../assets/images/chatbot_img1.png';
+import axios from 'axios';
 
 function Chatbot() {
     const [isChatbotVisible, setIsChatbotVisible] = useState(false);
@@ -25,29 +26,21 @@ function Chatbot() {
     // Initialize with static bot messages
     const [messages, setMessages] = useState([
         {
-            text: "Welcome to Smartping, trusted by over 7000 brands with multiple solutions that create great customer experience.",
-            msg_type: 'text',
-            sender: 'bot',
-            timestamp: getCurrentDateTime()
+            answer: "Welcome to Smartping, trusted by over 7000 brands with multiple solutions that create great customer experience.",
+            answer_type: 'text',
+            sender: 'bot'
         },
         {
-            text: "To assist you accordingly, please let me know if you are:",
-            msg_type: 'text',
-            sender: 'bot',
-            timestamp: getCurrentDateTime()
+            answer: "To assist you accordingly, please let me know if you are:",
+            answer_type: 'text',
+            sender: 'bot'
         },
         {
-            text: "New Customer, Existing Customer, DLT Support, FAQs", // Comma-separated values as a string
-            msg_type: 'button',
-            sender: 'bot',            
-            timestamp: getCurrentDateTime()
-        },
-        {
-            text: "Enterprise, Reseller, Government, Channel Partner, Others, FAQs, Trending, Back to Menu", // Comma-separated values as a string
-            msg_type: 'button',
-            sender: 'bot',            
-            timestamp: getCurrentDateTime()
+            answer: "New Customer\n Existing Customer\n DLT Support\n FAQs", // Comma-separated values as a string
+            answer_type: 'button',
+            sender: 'bot'            
         }
+        
     ]);
 
     const messagesEndRef = useRef(null);
@@ -73,15 +66,15 @@ function Chatbot() {
     const handleSendClick = () => {
         if (userInput.trim()) {
             const userMessage = {
-                text: userInput,
-                sender: 'user',
-                timestamp: getCurrentDateTime(),
+                answer: userInput,
+                sender: 'user'
+                // timestamp: getCurrentDateTime(),
             };
 
             const botMessage = {
-                text: "This is a response from the bot.",
-                sender: 'bot',
-                timestamp: getCurrentDateTime(),
+                answer: "This is a response from the bot.",
+                sender: 'bot'
+                // timestamp: getCurrentDateTime(),
             };
 
             // Add user's message, then bot's response
@@ -91,22 +84,50 @@ function Chatbot() {
         }
     };
 
+    
     // Handle button click events
-    const handleButtonClick = (option) => {
-        const userMessage = {
-            text: option,
-            sender: 'user',
-            timestamp: getCurrentDateTime(),
-        };
-
-        const botMessage = {
-            text: `You selected ${option}. Here is some information.`,
-            sender: 'bot',
-            timestamp: getCurrentDateTime(),
-        };
-
-        setMessages([...messages, userMessage, botMessage]);
+const handleButtonClick = async (option) => {
+    const userMessage = {
+        answer: option,
+        sender: 'user',
+        answer_type: 'text'
     };
+
+    // Add the user's message to the chat immediately
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
+
+    try {
+        // Make the axios call to the backend
+        const response = await axios.post('http://localhost:6001/chatbotRes', { question: option });
+
+        // Assuming response.data is an array of bot responses like you shared
+        const botResponses = response.data.results; // This is an array
+        console.log('botResponses: ', botResponses);
+
+        // Add each bot response to the chat based on its type
+        botResponses.forEach((response) => {
+            const botMessage = {
+                answer: response.answer,
+                sender: 'bot',
+                answer_type: response.answer_type
+            };
+
+            setMessages((prevMessages) => [...prevMessages, botMessage]);
+        });
+
+    } catch (error) {
+        console.error('Error fetching response from the bot:', error);
+
+        const errorMessage = {
+            answer: 'Sorry, there was an error processing your request. Please try again.',
+            sender: 'bot',
+            answer_type: 'text',
+            // timestamp: getCurrentDateTime(),
+        };
+        setMessages((prevMessages) => [...prevMessages, errorMessage]);
+    }
+};
+
 
     // Show confirmation dialog when clicking the close button
     const handleCloseClick = () => {
@@ -158,9 +179,9 @@ function Chatbot() {
                                     )}
 
                                     {/* Check if the message contains comma-separated values */}
-                                    {message.msg_type === 'button' ? (
+                                    {message.answer_type === 'button' ? (
                                         <div className="button-options">
-                                            {message.text.split(',').map((button, idx) => (
+                                            {message.answer.split('\n').map((button, idx) => (
                                                 <button key={idx} className="option-button" onClick={() => handleButtonClick(button.trim())}>
                                                     {button.trim()}
                                                 </button>
@@ -168,13 +189,14 @@ function Chatbot() {
                                         </div>
                                     ) : (
                                         <div className={`chatText ${message.sender === 'user' ? 'userMessage' : 'botMessage'}`}>
-                                            <div>{message.text}</div>
+                                            <div>{message.answer}</div>
                                         </div>
                                     )}
 
                                     {/* Display the timestamp below the message */}
                                     <div className='timestamp'>
-                                        {message.timestamp}
+                                        {/* {message.timestamp} */}
+                                        {getCurrentDateTime()}
                                     </div>
                                 </div>
                             ))}

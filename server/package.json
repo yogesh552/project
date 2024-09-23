@@ -1,5 +1,5 @@
 {
-  "name": "url_found_app",
+  "name": "server",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -9,16 +9,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.20.2",
-    "cookie-parser": "^1.4.6",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
-    "express": "^4.19.2",
-    "express-session": "^1.18.0",
-    "moment-timezone": "^0.5.45",
+    "express": "^4.21.0",
     "multer": "^1.4.5-lts.1",
-    "mysql": "^2.18.1",
-    "path": "^0.12.7",
-    "winston": "^3.14.2"
+    "mysql": "^2.18.1"
   }
 }

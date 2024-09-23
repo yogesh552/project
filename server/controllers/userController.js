@@ -17,50 +17,8 @@ function getCurrentDateAndTime(daysToAdd = 0) {
     const reversedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     return reversedDate;
 }
-// answer,
-//                 answer_type
-
-// const chatbotRes_onload=async (req,res) =>{
-//     try{
-
-//         let query
-//         let data
-//         let question='Welcome Message'
-        
-//         query =`
-//             SELECT 
-//                 question_id
-//             FROM
-//                 bot_ques_master
-//             WHERE 
-//                 question=? `        
-//         data=[question]
-        
-//         const results = await executeQuery(query,data);
-//         console.log('results: ', results);
-
-        
-//         query=`
-//             SELECT 
-//                 answer
-//             FROM
-//                 bot_ques_master
-//             WHERE
-//                 parent_id=?
-//                 `
-
-//         data=[results[0].question_id]
-        
-//         const results2 = await executeQuery(query,data);
-//         console.log('results2: ', results2);
 
 
-//         res.send({results:results, results2:results2})
-//     }
-//     catch(error){
-//         console.log('Error:',error)
-//     }
-// }
 
 const chatbotRes_onload = async (req, res) => {
     try {
@@ -68,15 +26,46 @@ const chatbotRes_onload = async (req, res) => {
 
         let query = `
             SELECT 
-                q1.question_id, q2.answer
-            FROM 
-                bot_ques_master q1
+                parent.question_id, child.answer, child.answer_type
+            FROM
+                bot_ques_master AS parent
             LEFT JOIN 
-                bot_ques_master q2 
+                bot_ques_master AS child  
             ON 
-                q1.question_id = q2.parent_id
+                parent.question_id = child.parent_id
             WHERE 
-                q1.question = ?`;
+                parent.question = ?`;
+
+        let data = [question];
+
+        const results = await executeQuery(query, data);
+        console.log('results: ', results);
+
+        res.send({ results: results });
+    } catch (error) {
+        console.log('Error:', error);
+        res.status(500).send({ error: 'An error occurred' });
+    }
+}
+
+const chatbotRes = async (req, res) => {
+    try {
+
+        console.log('question: ', req.body);
+        let question = req.body.question;
+        console.log('question: ', question);
+        
+        let query = `
+            SELECT 
+                parent.question_id, child.answer, child.answer_type, child.sender
+            FROM
+                bot_ques_master AS parent
+            LEFT JOIN 
+                bot_ques_master AS child  
+            ON 
+                parent.question_id = child.parent_id
+            WHERE 
+                parent.question = ?`;
 
         let data = [question];
 
@@ -96,22 +85,7 @@ const chatbotRes_onload = async (req, res) => {
 
 
 
-// const chatbotRes=async (req,res) =>{
-//     try{
-
-//         // let query =``        
-//         // let data=[]
-//         // const results = await executeQuery(query,data);
-        
-//         // res.send({})
-//     }
-//     catch(error){
-//         console.log('Error:',error)
-//     }
-// }
-
-
 module.exports = {
-    chatbotRes_onload
-    
+    chatbotRes_onload,
+    chatbotRes
 };

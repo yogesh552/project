@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-var multer = require("multer");
+// var multer = require("multer");
 
 const userController = require("../controllers/userController");
 
@@ -9,6 +9,9 @@ const userController = require("../controllers/userController");
  * GET /
  * Route to get the list of users.
  */
+
 router.post("/chatbotRes_onload", userController.chatbotRes_onload);
+
+router.post("/chatbotRes", userController.chatbotRes);
 
 module.exports = router;

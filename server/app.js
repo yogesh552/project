@@ -1,21 +1,16 @@
-var express=require('express')
-var app= express()
+const express = require('express');
+const app = express();
+const cors = require('cors');
 require('dotenv').config();
+const bodyparser = require('body-parser');
+const router=require('./routes/userRouter')
 
-const userRoutes = require('./routes/userRouter');
-const bodyParser=require('body-parser');
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended:true}));
-
-
-
-// Use routes
-app.use('/', userRoutes);
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(express.json());
+app.use(bodyparser.urlencoded({ extended: true }));
+app.use('/', router);
 
 
-
-
-app.listen(process.env.port, () => {
-    console.log(`Server is running on port ${process.env.port}`);
-})
+app.listen(6001, () => {
+  console.log('Server running on port 6001');
+});
