@@ -60,8 +60,7 @@ function Chatbot() {
 
     // Toggle chatbot visibility
     const handleImageClick = () => {
-        setIsChatbotVisible(!isChatbotVisible);
-        
+        setIsChatbotVisible(!isChatbotVisible);        
     };
 
     // Scroll to the bottom of the messages whenever a new message is added
@@ -116,20 +115,27 @@ const handleButtonClick = async (option) => {
         // Make the axios call to the backend
         const response = await axios.post('http://localhost:6001/chatbotRes', { question: option });
 
-        // Assuming response.data is an array of bot responses like you shared
-        const botResponses = response.data.results; // This is an array
-        console.log('botResponses: ', botResponses);
+        const botResponses = response.data.results; 
 
-        // Add each bot response to the chat based on its type
-        botResponses.forEach((response) => {
-            const botMessage = {
-                answer: response.answer,
-                sender: 'bot',
-                answer_type: response.answer_type
-            };
+        if(botResponses.length>0){
+            // Add each bot response to the chat based on its type
+            botResponses.forEach((response) => {
+                const botMessage = {
+                    answer: response.answer,
+                    sender: 'bot',
+                    answer_type: response.answer_type
+                };
 
-            setMessages((prevMessages) => [...prevMessages, botMessage]);
-        });
+                setMessages((prevMessages) => [...prevMessages, botMessage]);
+            });
+        }else{
+                const botMessage = {
+                    answer: 'I’m sorry, but I’m not able to answer this question',
+                    sender: 'bot',
+                    answer_type: 'text'
+                };
+                setMessages((prevMessages) => [...prevMessages, botMessage]);
+        }
 
     } catch (error) {
         console.error('Error fetching response from the bot:', error);
